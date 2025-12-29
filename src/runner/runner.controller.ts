@@ -1,7 +1,7 @@
-import { Body, Controller, Post, UseGuards, UsePipes } from "@nestjs/common";
+import { Body, Controller, Post, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
-import { WorkspaceRoleAtLeast } from "../common/guards/workspace-role.guard";
 import { RateLimit } from "../common/guards/rate-limit.guard";
+import { WorkspaceRoleAtLeast } from "../common/guards/workspace-role.guard";
 import { ZodPipe } from "../common/zod.pipe";
 import { ExecuteSchema } from "./runner.schemas";
 import { RunnerService } from "./runner.service";
@@ -25,8 +25,7 @@ export class RunnerController {
   @UseGuards(
     RateLimit(RUNNER_RATE_LIMIT, RUNNER_RATE_WINDOW_MS, "runner.execute")
   )
-  @UsePipes(new ZodPipe(ExecuteSchema))
-  execute(@Body() body: any) {
+  execute(@Body(new ZodPipe(ExecuteSchema)) body: any) {
     return this.runner.execute(body.workspaceId, body.nodeId, body.timeoutMs);
   }
 }
